@@ -4,9 +4,9 @@ CC:=g++
 EXE=DropTalk
 
 .cpp.o:
-	${CC} ${FLAGS} -c $@ $^
+	${CC} ${FLAGS} -c $^ -o $@
 
-${EXE}: main.cpp DropTable.cpp Ratio.cpp
+${EXE}: main.o DropTable.o Ratio.o
 	${CC} ${FLAGS} -o $@ $^
 
 .Phony: clean
