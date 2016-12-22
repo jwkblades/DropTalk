@@ -13,39 +13,36 @@ DropTable::~DropTable(void)
 void DropTable::insertRarity(std::string name, const Ratio& rates)
 {
 	rarities.push_front({name, rates});
-	Ratio maxRatio(1, 1);
+	std::size_t denom = 1;
 	for (std::pair<std::string, Ratio>& rarity : rarities)
 	{
-		if (rarity.second.getDenominator() > maxRatio.getDenominator())
+		if (rarity.second.getDenominator() > denom)
 		{
-			maxRatio.setDenominator(rarity.second.getDenominator());
+			denom = rarity.second.getDenominator();
 		}
 	}
 
 	for (std::pair<std::string, Ratio>& rarity : rarities)
 	{
-		rarity.second.normalizeOn(maxRatio);
+		rarity.second.normalizeOn(denom);
 	}
 }
 
-#include <iostream>
-using namespace std;
-
 std::string DropTable::operator[](std::size_t randomValue)
 {
-	std::string ret = "UNKNOWN";
+	std::string ret = "\033[1m\033[38;5;9mUNKNOWN\033[0m";
+	randomValue = (double(randomValue) / double(RAND_MAX)) * double(rarities.front().second.getDenominator());
+	bool found = false;
 	for (std::pair<std::string, Ratio>& rarity : rarities)
 	{
-		randomValue %= rarity.second.getDenominator();
-		cout << "[" << rarity.first << "] -> " << rarity.second.getNumerator() << "/" << rarity.second.getDenominator() << ", given value=" << randomValue << endl;
-		if (rarity.second.contains(randomValue))
+		if (!found && rarity.second.contains(randomValue))
 		{
 			rarity.second.resetNumerator();
 			ret = rarity.first;
+			found = true;
 		}
-		rarity.second++;
 		randomValue -= rarity.second.getNumerator();
-
+		rarity.second++;
 	}
 	return ret;
 }

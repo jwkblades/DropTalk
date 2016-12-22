@@ -3,6 +3,7 @@
 Ratio::Ratio(std::size_t num, std::size_t denom)
 {
 	mOriginalNumerator = num;
+	mIncrement = 1;
 	setNumerator(num);
 	setDenominator(denom);
 }
@@ -43,7 +44,7 @@ Ratio& Ratio::operator++(void)
 
 Ratio& Ratio::operator++(int)
 {
-	mNumerator++;
+	mNumerator += mIncrement;
 	return *this;
 }
 
@@ -62,7 +63,7 @@ Ratio& Ratio::operator=(const Ratio& src)
 
 bool Ratio::contains(std::size_t value) const
 {
-	return value <= mNumerator;
+	return value < mNumerator;
 }
 
 void Ratio::resetNumerator(void)
@@ -70,30 +71,15 @@ void Ratio::resetNumerator(void)
 	mNumerator = mOriginalNumerator;
 }
 
-void Ratio::normalizeOn(const Ratio& other)
+void Ratio::normalizeOn(std::size_t newDenom)
 {
-	if (mDenominator == other.mDenominator)
+	if (mDenominator == newDenom)
 	{
 		return;
 	}
-	mNumerator *= other.mDenominator;
-	mOriginalNumerator  *= other.mDenominator;
-	mDenominator *= other.mDenominator;
-}
-
-void Ratio::normalizeEach(Ratio& other)
-{
-	if (mDenominator == other.mDenominator)
-	{
-		return;
-	}
-	std::size_t tempDenom = mDenominator;
-	mNumerator *= other.mDenominator;
-	mOriginalNumerator  *= other.mDenominator;
-	mDenominator *= other.mDenominator;
-
-	other.mNumerator *= tempDenom;
-	other.mOriginalNumerator *= tempDenom;
-	other.mDenominator *= tempDenom;
+	mIncrement = (mIncrement * newDenom) / mDenominator;
+	mNumerator = (mNumerator * newDenom) / mDenominator;
+	mOriginalNumerator = (mOriginalNumerator * newDenom) / mDenominator;
+	mDenominator = newDenom;
 }
 

@@ -25,11 +25,11 @@ public:
 
 	void resetNumerator(void);
 
-	void normalizeOn(const Ratio& other);
-	void normalizeEach(Ratio& other);
+	void normalizeOn(std::size_t newDenom);
 
 private:
 	std::size_t mOriginalNumerator;
+	std::size_t mIncrement;
 	std::size_t mNumerator;
 	std::size_t mDenominator;
 };
